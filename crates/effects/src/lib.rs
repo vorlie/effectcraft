@@ -8,6 +8,7 @@
 
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
+pub mod audio_dsp;
 pub mod audio_fx;
 mod blur2;
 mod blur3;
@@ -69,6 +70,7 @@ pub mod warp_stab;
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
+pub use audio_dsp::{BandOutput, ChannelMode, FrequencyAnalyzer, FrequencyBand, SpectrumAnalysis};
 pub use card3d::{CompLight, CompScene};
 pub use color_fx::{COLORAMA_PRESETS, ColoramaPalette};
 pub use color_fx::{

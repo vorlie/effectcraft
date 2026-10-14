@@ -1470,47 +1470,7 @@ fn threads(ctx: &EffectCtx, mut b: Buf) -> Buf {
 
 // ---------------------------------------------------------------- Audio Spectrum / Waveform
 
-/// In-place iterative radix-2 FFT (`re`, `im` lengths a power of two).
-pub(crate) fn fft(re: &mut [f64], im: &mut [f64]) {
-    let n = re.len();
-    if n < 2 {
-        return;
-    }
-    let mut j = 0;
-    for i in 1..n {
-        let mut bit = n >> 1;
-        while j & bit != 0 {
-            j ^= bit;
-            bit >>= 1;
-        }
-        j |= bit;
-        if i < j {
-            re.swap(i, j);
-            im.swap(i, j);
-        }
-    }
-    let mut len = 2;
-    while len <= n {
-        let ang = -2.0 * PI / len as f64;
-        let (ws, wc) = ang.sin_cos();
-        for start in (0..n).step_by(len) {
-            let (mut cr, mut ci) = (1.0, 0.0);
-            for k in 0..len / 2 {
-                let (a, bb) = (start + k, start + k + len / 2);
-                let tr = re[bb] * cr - im[bb] * ci;
-                let ti = re[bb] * ci + im[bb] * cr;
-                re[bb] = re[a] - tr;
-                im[bb] = im[a] - ti;
-                re[a] += tr;
-                im[a] += ti;
-                let ncr = cr * wc - ci * ws;
-                ci = cr * ws + ci * wc;
-                cr = ncr;
-            }
-        }
-        len <<= 1;
-    }
-}
+pub(crate) use crate::audio_dsp::fft;
 
 const AUDIO_RATE: u32 = 48_000;
 
